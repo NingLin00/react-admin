@@ -8,10 +8,32 @@ import './index.less'
 
   handleSubmit = (e) => {
     e.preventDefault();
+    //校验并获取一组输入域的值与 Error，若 fieldNames 参数为空，则校验全部组件
+    this.props.form.validateFields((error, values) => {
+      if (!error) {
+        console.log(values)
+      }else {
+        console.log(error)
+      }
+    })
   }
   //校验规则validator方法
    validator = (rule, value, callback) => {
-
+    //rule:当前输入域的对象，内有各种相关属性
+     //value：当前输入域的值
+     //callback：出现错误的回调函数
+      const name = rule.fullField === "username" ? '用户名' : '密码';
+     if(!value){
+       callback(`必须输入${name}`)
+     }else if (value.length < 4 ) {
+       callback(`${name}不得少于4位`)
+     }else if (value.length > 15 ){
+       callback(`${name}不得超过15位`)
+     }else if(!/^[a-zA-Z_0-9]+$/.test(value)){
+       callback(`${name}只能包含英文字母、数字和下划线`)
+     }else {
+       callback()
+     }
    }
   render() {
     const { getFieldDecorator } = this.props.form;
