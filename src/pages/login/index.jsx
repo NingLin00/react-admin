@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { Form, Icon, Input, Button } from 'antd';
+import { Form, Icon, Input, Button, message } from 'antd';
+import { reqLogin } from '../../api';
 
 import logo from './logo.png';
 import './index.less'
@@ -7,13 +8,22 @@ import './index.less'
  class Login extends Component {
 
   handleSubmit = (e) => {
+    //阻止默认行为
     e.preventDefault();
     //校验并获取一组输入域的值与 Error，若 fieldNames 参数为空，则校验全部组件
-    this.props.form.validateFields((error, values) => {
+    this.props.form.validateFields(async (error, values) => {
       if (!error) {
-        console.log(values)
+        const { username, password} = values;
+        const result = await reqLogin(username, password);
+        if (result){
+          //登录成功
+          this.props.history.replace('/')
+        }else {
+          //登录失败
+          this.props.from.setFields(['password'])
+        }
       }else {
-        console.log(error)
+
       }
     })
   }
