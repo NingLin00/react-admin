@@ -16,14 +16,12 @@ import './index.less'
         const { username, password} = values;
         const result = await reqLogin(username, password);
         if (result){
-          //登录成功
+          //登录成功,跳转
           this.props.history.replace('/')
         }else {
-          //登录失败
+          //登录失败,清空密码输入
           this.props.from.setFields(['password'])
         }
-      }else {
-
       }
     })
   }

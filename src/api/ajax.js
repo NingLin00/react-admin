@@ -4,17 +4,18 @@ import {message} from 'antd'
 
 
 export default function ajax(url, data = {}, method = 'get') {
-  let reqParams = data;
-  //转化小写进行比较
+  let reqParams =  data;
+  //大小写方法不一样，所以转化小写
   method = method.toLowerCase();
-  if (method === 'post') {
+  //判断。get方法与post传数据方式不同
+  if (method === 'get') {
     reqParams = {
-      params: data
+      params:data
     }
   }
   return axios[method](url, reqParams)
     .then((res) => {
-      const {data} = res;
+      const { data } = res;
       if (res.status === 0) {
         return data.data
       }else {
@@ -22,6 +23,6 @@ export default function ajax(url, data = {}, method = 'get') {
       }
     })
     .catch((err) => {
-      message.error('网络出现异常，请刷新重试~', 2)
+      message.error('网络异常，请刷新', 2)
     })
 }
