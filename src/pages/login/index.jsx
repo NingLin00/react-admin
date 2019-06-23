@@ -1,32 +1,32 @@
-import React, { Component } from 'react';
-import { Form, Icon, Input, Button, message } from 'antd';
+import React from 'react';
+import { Form, Icon, Input, Button } from 'antd';
 import { reqLogin } from '../../api';
 
-import logo from './logo.png';
+import logo from '../../assets/images/logo.png';
 import './index.less'
 
- class Login extends Component {
+ function Login (props) {
 
-  handleSubmit = (e) => {
+  const handleSubmit = (e) => {
     //阻止默认行为
     e.preventDefault();
     //校验并获取一组输入域的值与 Error，若 fieldNames 参数为空，则校验全部组件
-    this.props.form.validateFields(async (error, values) => {
+    props.form.validateFields(async (error, values) => {
       if (!error) {
         const { username, password} = values;
         const result = await reqLogin(username, password);
         if (result){
           //登录成功,跳转
-          this.props.history.replace('/')
+          props.history.replace('/')
         }else {
           //登录失败,清空密码输入
-          this.props.from.setFields(['password'])
+          props.form.resetFields(['password'])
         }
       }
     })
   }
   //校验规则validator方法
-   validator = (rule, value, callback) => {
+   const validator = (rule, value, callback) => {
     //rule:当前输入域的对象，内有各种相关属性
      //value：当前输入域的值
      //callback：出现错误的回调函数
@@ -43,8 +43,8 @@ import './index.less'
        callback()
      }
    }
-  render() {
-    const { getFieldDecorator } = this.props.form;
+
+    const { getFieldDecorator } = props.form;
     return <div className="login">
       <header className="login-header">
         <img src={logo} alt="logo"/>
@@ -52,19 +52,19 @@ import './index.less'
       </header>
       <section className="login-content">
         <h2>用户登录</h2>
-        <Form onSubmit={this.handleSubmit} className="login-form">
+        <Form onSubmit={handleSubmit} className="login-form">
           <Form.Item>
             {
               getFieldDecorator('username', {
                 rules: [
                   {
-                    validator: this.validator
+                    validator: validator
                   }
                 ]
               })(
                 <Input
                   prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
-                  placeholder="Username"
+                  placeholder="用户名"
                   className="login-input"/>
               )
             }
@@ -75,13 +75,13 @@ import './index.less'
               getFieldDecorator('password', {
                 rules: [
                   {
-                    validator: this.validator
+                    validator: validator
                   }
                 ]
               })(
                 <Input
                   prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
-                  placeholder="Password"
+                  placeholder="密码"
                   type="password"
                   className="login-input"/>
               )
@@ -93,6 +93,5 @@ import './index.less'
         </Form>
       </section>
     </div>;
-  }
 }
 export default Form.create()(Login)

@@ -15,8 +15,8 @@ export default function ajax(url, data = {}, method = 'get') {
   }
   return axios[method](url, reqParams)
     .then((res) => {
-      const { data } = res;
-      if (res.status === 0) {
+      const { status, data } = res;
+      if (status === 0) {
         return data.data
       }else {
         message.error(data.msg, 2)
