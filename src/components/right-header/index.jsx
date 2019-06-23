@@ -9,6 +9,7 @@ import './index.less'
 
 
 export default class RightHeader extends Component {
+
   render() {
     return <div>
       <div className="header-main-top">

@@ -30,7 +30,7 @@ import './index.less'
     //rule:当前输入域的对象，内有各种相关属性
      //value：当前输入域的值
      //callback：出现错误的回调函数
-      const name = rule.fullField === "username" ? '用户名' : '密码';
+     const name = rule.fullField === "username" ? '用户名' : '密码';
      if(!value){
        callback(`必须输入${name}`)
      }else if (value.length < 4 ) {
