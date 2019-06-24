@@ -1,6 +1,8 @@
 import React from 'react';
 import { Form, Icon, Input, Button } from 'antd';
+
 import { reqLogin } from '../../api';
+import { setItem } from '../../until/storage-tool'
 
 import logo from '../../assets/images/logo.png';
 import './index.less'
@@ -11,12 +13,15 @@ import './index.less'
     //阻止默认行为
     e.preventDefault();
     //校验并获取一组输入域的值与 Error，若 fieldNames 参数为空，则校验全部组件
+    //['field1', 'field2'], options, (errors, values)
     props.form.validateFields(async (error, values) => {
       if (!error) {
         const { username, password} = values;
         const result = await reqLogin(username, password);
         if (result){
-          //登录成功,跳转
+          //登录成功
+          setItem(result);
+          //跳转
           props.history.replace('/')
         }else {
           //登录失败,清空密码输入

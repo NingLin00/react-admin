@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import { Layout } from 'antd';
 
-import './index.less'
 import LeftNav from "../../components/left-nav";
 import RightHeader from "../../components/right-header";
+import { getItem } from '../../until/storage-tool'
+import { reqValidateUserInfo } from '../../api'
 
-
+import './index.less'
 
 const { Header, Content, Footer,Sider } = Layout;
 
@@ -14,6 +15,16 @@ export default class Admin extends Component {
     collapsed: false,
   };
 
+  async componentWillMount(){
+    //渲染之前判断用户是否登录成功
+    const user = getItem();
+    if (user || user._id) {
+      //给后台发请求验证此用户是否存在
+      const result = await reqValidateUserInfo(user._id);
+      if (result) return
+    }
+    this.props.history.replace('/login')
+  }
   onCollapse = collapsed => {
     console.log(collapsed);
     this.setState({ collapsed });

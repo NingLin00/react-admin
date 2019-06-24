@@ -6,8 +6,8 @@ import Login from './pages/login';
 
 
 export default function App () {
-    return <Switch>
-      <Route path='/login' component={Login}/>
-      <Route path='/' component={Admin}/>
-    </Switch>;
+  return <Switch>
+    <Route path='/login' component={Login}/>
+    <Route path='/' component={Admin}/>
+  </Switch>;
 }
