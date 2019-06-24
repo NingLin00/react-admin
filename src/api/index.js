@@ -26,4 +26,6 @@ export const reqWeather = function () {
       }
     })
   })
-}
+};
+//请求商品品类数据
+export const reqCategories = (parentId) => ajax('/manage/category/list', {parentId});
