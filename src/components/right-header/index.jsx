@@ -8,6 +8,7 @@ import dayjs                   from 'dayjs';
 import ConmonButton            from "../conmon-button";
 import { getItem, removeItem } from '../../until/storage-tool';
 import { reqWeather }          from '../../api'
+import menuList                from '../../config/menu-config'
 
 import './index.less'
 
@@ -21,11 +22,14 @@ class RightHeader extends Component {
     //初始化天气图片
     weatherImg: 'http://api.map.baidu.com/images/weather/day/qing.png',
     weather   : '晴'
+  };
+  componentWillReceiveProps(nextProps){
+    this.title    = this.getTitle(nextProps)
   }
-
   componentWillMount(){
     //从localStorage获取用户名
-    this.username = getItem().username
+    this.username = getItem().username;
+    this.title    = this.getTitle(this.props)
   }
   async componentDidMount(){
     //更新时间
@@ -40,6 +44,7 @@ class RightHeader extends Component {
       this.setState(result)
     }
   }
+
   //退出登录
   logout = () => {
     confirm({
@@ -54,6 +59,27 @@ class RightHeader extends Component {
       }
     })
   }
+  //获取title的方法
+  getTitle = (props) => {
+    const { pathname } = props.location;
+    for (let i = 0; i < menuList.length; i++) {
+      const menu = menuList[i];
+      if (menu.children) {
+        //二级菜单,判断是否和pathname相等后返回title
+        for (let j = 0; j < menu.children.length; j++) {
+          const subMenu = menu.children[j];
+          if (subMenu.key === pathname) {
+            return subMenu.title;
+          }
+        }
+      }else {
+        //一级菜单，直接返回title
+        if (menu.key === pathname) {
+          return menu.title;
+        }
+      }
+    }
+  };
   render() {
     const { sysTime,weatherImg, weather } = this.state;
     return <div>
@@ -62,7 +88,7 @@ class RightHeader extends Component {
         <ConmonButton onClick={this.logout}>退出</ConmonButton>
       </div>
       <div className="header-main-bottom">
-        <span className="header-main-left">用户管理</span>
+        <span className="header-main-left">{this.title}</span>
         <div className="header-main-right">
           <span>{dayjs(sysTime).format('YYYY-MM-DD HH:mm:ss')}</span>
           <img src={weatherImg} alt="weatherImg"/>
