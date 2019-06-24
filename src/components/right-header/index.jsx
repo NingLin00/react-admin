@@ -1,14 +1,14 @@
 
 // 右侧头部组件
-import React, { Component } from 'react';
-import { Modal } from 'antd';
-import { withRouter } from 'react-router-dom';
-import dayjs from 'dayjs';
+import React, { Component }    from 'react';
+import { Modal }               from 'antd';
+import { withRouter }          from 'react-router-dom';
+import dayjs                   from 'dayjs';
 
-import ConmonButton from "../conmon-button";
+import ConmonButton            from "../conmon-button";
 import { getItem, removeItem } from '../../until/storage-tool';
+import { reqWeather }          from '../../api'
 
-import logo from '../../assets/images/logo.png'
 import './index.less'
 
 const { confirm } = Modal;
@@ -17,19 +17,28 @@ const { confirm } = Modal;
 class RightHeader extends Component {
   state = {
     //初始化时间数据
-    sysTime : Date.now(),
+    sysTime   : Date.now(),
+    //初始化天气图片
+    weatherImg: 'http://api.map.baidu.com/images/weather/day/qing.png',
+    weather   : '晴'
   }
 
   componentWillMount(){
-    //从localstorage获取用户名
+    //从localStorage获取用户名
     this.username = getItem().username
   }
-  componentDidMount(){
+  async componentDidMount(){
+    //更新时间
     setInterval(() => {
       this.setState({
         sysTime: Date.now()
       })
     },1000)
+    //更新天气
+    const result = await reqWeather();
+    if (result) {
+      this.setState(result)
+    }
   }
   //退出登录
   logout = () => {
@@ -46,7 +55,7 @@ class RightHeader extends Component {
     })
   }
   render() {
-    const { sysTime } = this.state;
+    const { sysTime,weatherImg, weather } = this.state;
     return <div>
       <div className="header-main-top">
         <span>欢迎, {this.username}</span>
@@ -56,8 +65,8 @@ class RightHeader extends Component {
         <span className="header-main-left">用户管理</span>
         <div className="header-main-right">
           <span>{dayjs(sysTime).format('YYYY-MM-DD HH:mm:ss')}</span>
-          <img src={logo} alt=""/>
-          <span>晴</span>
+          <img src={weatherImg} alt="weatherImg"/>
+          <span>{weather}</span>
         </div>
       </div>
     </div>;
