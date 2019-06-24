@@ -1,12 +1,21 @@
-import React, { Component } from 'react';
-import { Layout } from 'antd';
 
-import LeftNav from "../../components/left-nav";
-import RightHeader from "../../components/right-header";
-import { getItem } from '../../until/storage-tool'
-import { reqValidateUserInfo } from '../../api'
+import React, { Component }       from 'react';
+import { Layout }                 from 'antd';
+import { Route, Switch, Redirect }from 'react-router-dom';
 
-import './index.less'
+import Home                     from '../../pages/home/index';
+import Category                 from '../../pages/category'
+import Product                  from '../../pages/product'
+import User                     from '../../pages/user'
+import Role                     from '../../pages/role'
+import Line                     from '../../pages/line'
+import Bar                      from '../../pages/bar'
+import Pie                      from '../../pages/pie'
+import LeftNav                  from "../../components/left-nav";
+import RightHeader              from "../../components/right-header";
+import { getItem }              from '../../until/storage-tool'
+import { reqValidateUserInfo }  from '../../api'
+
 
 const { Header, Content, Footer,Sider } = Layout;
 
@@ -25,8 +34,8 @@ export default class Admin extends Component {
     }
     this.props.history.replace('/login')
   }
+  //收缩、展开侧边导航
   onCollapse = collapsed => {
-    console.log(collapsed);
     this.setState({ collapsed });
   };
 
@@ -42,8 +51,18 @@ export default class Admin extends Component {
             <RightHeader/>
           </Header>
           <Content style={{ margin: '25px 16px' }}>
-            <div className="com-middle">
-              <h3 style={{ fontSize: '20px',color: '#707070' }}>欢迎使用硅谷后台管理系统</h3>
+            <div style={{ padding: 24, background: '#fff', minHeight: 500 }}>
+              <Switch>
+                <Route path="/home" component={Home}/>
+                <Route path="/category" component={Category}/>
+                <Route path="/product" component={Product}/>
+                <Route path="/user" component={User}/>
+                <Route path="/role" component={Role}/>
+                <Route path="/charts/line" component={Line}/>
+                <Route path="/charts/bar" component={Bar}/>
+                <Route path="/charts/pie" component={Pie}/>
+                <Redirect to="/home"/>
+              </Switch>
             </div>
           </Content>
           <Footer style={{ textAlign: 'center' }}>

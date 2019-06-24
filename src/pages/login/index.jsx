@@ -1,10 +1,10 @@
-import React from 'react';
+import React                         from 'react';
 import { Form, Icon, Input, Button } from 'antd';
 
 import { reqLogin } from '../../api';
-import { setItem } from '../../until/storage-tool'
+import { setItem }  from '../../until/storage-tool'
 
-import logo from '../../assets/images/logo.png';
+import logo         from '../../assets/images/logo.png';
 import './index.less'
 
  function Login (props) {
