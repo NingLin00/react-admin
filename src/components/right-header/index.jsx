@@ -2,6 +2,7 @@
 // 右侧头部组件
 import React, { Component } from 'react';
 import { Modal } from 'antd';
+import { withRouter } from 'react-router-dom';
 
 import ConmonButton from "../conmon-button";
 import { getItem, removeItem } from '../../until/storage-tool';
@@ -11,7 +12,7 @@ import './index.less'
 
 const { confirm } = Modal;
 
-export default class RightHeader extends Component {
+class RightHeader extends Component {
 
   componentWillMount(){
     this.username = getItem().username
@@ -21,7 +22,7 @@ export default class RightHeader extends Component {
       title: '您确认要退出登录吗?',
       okText: '确认',
       cancelText: '取消',
-      onOk() {
+      onOk: () => {
         //确认则清除数据
         removeItem();
         // 退出登录
@@ -46,3 +47,5 @@ export default class RightHeader extends Component {
     </div>;
   }
 }
+//向组件传递三大属性
+export default withRouter(RightHeader);
