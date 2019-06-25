@@ -28,6 +28,7 @@ class LeftNav extends Component {
   componentWillMount(){
     //从三大属性之一的location中拿到pathname。
     const { pathname } = this.props.location;
+    let isHome = true;
     //接收展开的列表数据到组件的menus属性上，menus是自定义添加属性
     this.menus = menuList.map((menu) => {
       //判断菜单数据中的某项是否有二级菜单
@@ -49,6 +50,7 @@ class LeftNav extends Component {
                 // 说明当前地址是一个二级菜单，需要展开一级菜单
                 // 将父级一级菜单的key添加到组件的自定义属性openKey上
                 this.openKey = menu.key;
+                isHome = false;
               }
               return this.createMenu(item)
             })
@@ -56,11 +58,12 @@ class LeftNav extends Component {
         </SubMenu>
       }else {
         //一级菜单
+        if (menu.key === pathname) isHome = false;
         return this.createMenu(menu)
       }
     });
     //将pathname添加到组件的selectedKey属性上，selectedKey是自定义添加属性
-    this.selectedKey = pathname;
+    this.selectedKey = isHome ? '/home' : pathname;
   }
   render() {
     const {collapsed} = this.props;

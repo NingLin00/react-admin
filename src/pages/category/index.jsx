@@ -21,7 +21,6 @@ export default class Category extends Component {
   }
   render() {
     const { categoryData } = this.state;
-    console.log(this.state.categoryData)
     //表头内容
     const columns = [
       {
@@ -50,6 +49,7 @@ export default class Category extends Component {
           pageSizeOptions: ['4', '10', '15', '20'],
           defaultPageSize: 4,
           showQuickJumper: true,
+          rowKey: '_id'
         }}
       />
     </Card>;

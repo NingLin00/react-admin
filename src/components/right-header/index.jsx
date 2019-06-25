@@ -33,16 +33,24 @@ class RightHeader extends Component {
   }
   async componentDidMount(){
     //更新时间
-    setInterval(() => {
+    this.timeId = setInterval(() => {
       this.setState({
         sysTime: Date.now()
       })
     },1000)
     //更新天气
-    const result = await reqWeather();
+    const { promise, cancel } = reqWeather();
+    this.cancel = cancel;
+    const result = await promise
     if (result) {
       this.setState(result)
     }
+  }
+  componentWillUnmount(){
+    //清除定时器
+    clearInterval(this.timeId);
+    //取消天气请求
+    this.cancel();
   }
 
   //退出登录
