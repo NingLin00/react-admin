@@ -5,9 +5,9 @@ import { message } from 'antd'
 import ajax from './ajax';
 
 //请求登录
-export const reqLogin = (username, password) => ajax('/login', {username, password}, 'post');
+export const reqLogin = ( username, password ) => ajax('/login', { username, password }, 'post');
 //请求验证用户信息
-export const reqValidateUserInfo = (id) => ajax('/validate/user', {id}, 'POST');
+export const reqValidateUserInfo = ( id ) => ajax('/validate/user', { id }, 'post');
 //请求天气功能
 export const reqWeather = function () {
   let cancel = null;
@@ -26,11 +26,16 @@ export const reqWeather = function () {
         reject()
       }
     })
+    cancel()
   })
   return {
     promise,
     cancel
   }
 };
-//请求商品品类数据
-export const reqCategories = (parentId) => ajax('/manage/category/list', {parentId});
+//请求商品品类列表
+export const reqCategories = ( parentId ) => ajax('/manage/category/list', { parentId });
+//请求添加商品品类
+export const reqAddCategory = ( parentId, categoryName ) => ajax('/manage/category/add', { parentId, categoryName }, 'post');
+//请求更新品类名称
+export const reqUpdateCategoryName = ( categoryId, categoryName ) => ajax('/manage/category/update', { categoryId,categoryName }, 'post');

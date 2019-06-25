@@ -34,7 +34,7 @@ export default class Admin extends Component {
       //给后台发请求验证此用户是否存在
       const result = await reqValidateUserInfo(user._id);
       if (result) {
-        this.setState({
+        return this.setState({
           isLoading: false,
           success  : true
         })
