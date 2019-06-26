@@ -25,6 +25,7 @@ class ReviseCategoryNameForm extends Component {
       <Item>
         {
           getFieldDecorator('categoryName',{
+            initialValue: this.props.categoryName,
             rules: [{
               validator: this.validator
             }]

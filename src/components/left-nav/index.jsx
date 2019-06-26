@@ -27,7 +27,12 @@ class LeftNav extends Component {
   //在渲染之前生成菜单列表
   componentWillMount(){
     //从三大属性之一的location中拿到pathname。
-    const { pathname } = this.props.location;
+    let { pathname } = this.props.location;
+    //商品管理子页适配
+    const pathnameReg = /^\/product\//;
+    if(pathnameReg.test(pathname)) {
+      pathname = pathname.slice(0, 8)
+    }
     let isHome = true;
     //接收展开的列表数据到组件的menus属性上，menus是自定义添加属性
     this.menus = menuList.map((menu) => {
