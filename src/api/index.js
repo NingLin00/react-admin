@@ -33,7 +33,7 @@ export const reqWeather = function () {
     cancel
   }
 };
-//请求商品品类列表
+//请求查询商品品类列表，parentId=‘0’则查询一级品类，parentId=_id则查询此品类的子品类
 export const reqCategories = ( parentId ) => ajax('/manage/category/list', { parentId });
 //请求添加商品品类
 export const reqAddCategory = ( parentId, categoryName ) => ajax('/manage/category/add', { parentId, categoryName }, 'post');

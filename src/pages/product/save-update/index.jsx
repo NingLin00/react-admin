@@ -16,11 +16,11 @@ export default class SaveUpdate extends Component {
   async componentDidMount(){
     const result = await reqCategories('0');
     if (result) {
-      //console.log(result)//返回result是一个数组，里面包含了多个一级品类对象
+      //console.log(result)//返回result是一个数组，里面包含了多个一级品类对象,result._id代表每个一级品类
       this.setState({
         options: result.map(item => {
           return {
-            value: item.value,
+            value: item._id,
             label: item.name,
             isLeaf: false,
           }
@@ -41,11 +41,25 @@ export default class SaveUpdate extends Component {
    */
   loadData = async selectedOptions => {
     const targetOption = selectedOptions[selectedOptions.length - 1];
+    //转圈圈
     targetOption.loading = true;
-    console.log(targetOption);
-    const result = await reqCategories(targetOption.value)
+    //console.log(targetOption);//下拉选中的对象
+    //targetOption.value是一级品类的_id，根据id再发请求查找并判断是否有子品类
+    const result = await reqCategories(targetOption.value);
     if (result) {
-      console.log(result)
+      //console.log(result)//请求回来的是一个数组，包含了多个子品类对象
+      //请求回来数据了就不转圈圈了
+      targetOption.loading = false;
+      targetOption.children = result.map(item => {
+        return {
+          label: item.name,
+          value: item._id,
+        }
+      });
+      //更新状态
+      this.setState({
+        options: [...this.state.options]
+      })
     }
   }
 
@@ -86,7 +100,6 @@ export default class SaveUpdate extends Component {
             changeOnSelect
             allowClear={false}
             placeholder="请选择"
-            defaultValue={['']}
           />
         </Item>
         <Item label="商品价格" >
