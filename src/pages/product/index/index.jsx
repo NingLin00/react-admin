@@ -2,27 +2,48 @@ import React, { Component } from 'react';
 import { Card, Table, Select, Input, Button, Icon } from 'antd'
 
 import { reqCategoryPageList } from '../../../api/index'
-import ConmonButton from '../../../components/conmon-button'
+import ConmonButton            from '../../../components/conmon-button'
 import './index.less'
 
 const { Option } = Select;
+
 export default class Index extends Component {
   state = {
-    products: []
+    products: [],//初始化商品数据
+    total   : 0,
+    loading : true
   };
 
   async componentDidMount(){
-    const result = await reqCategoryPageList( 1, 4);
-    console.log(result)
-    if (result) {
-      this.setState({
-        products: result.list
-      })
-    }
+    this.fetchPage( 1,4 );
   }
 
+  /**
+   * 请求分页数据
+   */
+  fetchPage = async ( pageNum, pageSize ) => {
+    this.setState({
+      loading: true
+    })
+    //发送请求，获取商品列表
+    const result = await reqCategoryPageList( pageNum, pageSize );
+    if (result) {
+      this.setState({
+        products: result.list,
+        total   : result.total,
+        loading : false
+      })
+    }
+  };
+  /**
+   * 跳转到添加产品界面
+   * @returns {*}
+   */
+  showAddProduct = () => {
+    this.props.history.push('/product/saveupdate')
+  }
   render() {
-    const { products } = this.state;
+    const { products, total,loading } = this.state;
     //表头内容
     const columns = [
       {
@@ -72,7 +93,7 @@ export default class Index extends Component {
           <Button type="primary">搜索</Button>
         </div>
       }
-      extra={<Button type="primary"><Icon type="plus"/>添加产品</Button>}>
+      extra={<Button type="primary" onClick={this.showAddProduct}><Icon type="plus"/>添加产品</Button>}>
       <Table
         columns={columns}
         dataSource={ products }
@@ -83,7 +104,11 @@ export default class Index extends Component {
           defaultPageSize: 4,
           pageSizeOptions: ['4','8','12','16']
         }}
-        rowKey="_id"
+        rowKey  ="_id"
+        total   ={total}
+        loading ={loading}
+        onChange={this.fetchPage}
+        onShowSizeChange={this.fetchPage}
       />
     </Card>;
   }

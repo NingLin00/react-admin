@@ -69,7 +69,12 @@ class RightHeader extends Component {
   }
   //获取title的方法
   getTitle = (props) => {
-    const { pathname } = props.location;
+    let { pathname } = props.location;
+    //商品管理子页适配
+    const pathnameReg = /^\/product\//;
+    if(pathnameReg.test(pathname)) {
+      pathname = pathname.slice(0, 8)
+    }
     for (let i = 0; i < menuList.length; i++) {
       const menu = menuList[i];
       if (menu.children) {
