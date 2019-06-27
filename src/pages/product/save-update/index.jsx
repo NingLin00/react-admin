@@ -1,39 +1,114 @@
 import React, { Component } from 'react';
-import { Card,Form,Button,Input,Cascader,InputNumber,Icon } from 'antd'
+import { Card,Form,Button,Input,Cascader,InputNumber,Icon, message } from 'antd'
+import draftToHtml from 'draftjs-to-html';
+import { convertToRaw } from 'draft-js'
 
-import { reqCategories } from '../../../api'
+import { reqCategories,reqAddProduct,reqUpdateProduct } from '../../../api'
 import RichTextEditor from './rich-text-editor'
+import PictureUpload  from './picture-upload'
 import './index.less'
 
 const { Item } = Form;
 
-export default class SaveUpdate extends Component {
+class SaveUpdate extends Component {
 
   state = {
     options: []
   };
-
-  async componentDidMount(){
-    const result = await reqCategories('0');
+  richTextEditorRef = React.createRef();
+  fetchCategories = async ( parentId ) => {
+    //根据ID请求商品品类
+    const result = await reqCategories(parentId);
     if (result) {
       //console.log(result)//返回result是一个数组，里面包含了多个一级品类对象,result._id代表每个一级品类
-      this.setState({
-        options: result.map(item => {
-          return {
-            value: item._id,
-            label: item.name,
-            isLeaf: false,
-          }
+      if (parentId === '0') {
+        this.setState({
+          options: result.map(item => {
+            return {
+              value: item._id,
+              label: item.name,
+              isLeaf: false,
+            }
+          })
         })
-      })
+      }else {
+        this.setState({
+          options: this.state.options.map(item => {
+            if (item.value === parentId) {
+              console.log(item,item.value)
+              item.children = result.map((item) => {
+                return {
+                  value: item._id,
+                  label: item.name
+                }
+              })
+            }
+            return item
+          })
+        })
+      }
     }
+  }
+  async componentDidMount(){
+   this.fetchCategories('0')
+
+
+    const product = this.props.location.state;
+    let categoriesId = [];
+    if (product) {
+      if (product.pCategoryId !== '0') {
+        categoriesId.push(product.pCategoryId);
+        // 请求二级分类数据
+        this.fetchCategories(product.pCategoryId);
+      }
+      categoriesId.push(product.categoryId);
+    }
+    this.categoriesId = categoriesId;
   }
   /**
    * 提交表单
    * @param e
    */
   addProduct = (e) => {
+    //阻止默认行为
     e.preventDefault();
+    //表单验证
+    this.props.form.validateFields(async (err, values) => {
+      if (!err) {
+        const {editorState} = this.richTextEditorRef.current.state;
+        //得到富文本输入框的值detail
+        const detail = draftToHtml(convertToRaw(editorState.getCurrentContent()));
+        const { name, desc, price, categoriesId } = values;
+
+        let pCategoryId = '0';
+        let categoryId  = '';
+        let promise     = null;
+        if (categoriesId.length === 1) {
+          categoryId = categoriesId[0];
+        } else {
+          pCategoryId = categoriesId[0];
+          categoryId = categoriesId[1];
+        }
+        const product = this.props.location.state;//拿到的目标对象
+        const opations = {name, desc, price, categoryId, pCategoryId, detail};
+        if (product) {
+          //说明是修改商品数据请求更新
+          opations._id = product._id;
+          //发送请求更新
+          promise = reqUpdateProduct(opations)
+        }else {
+          //说明是添加商品数据，发送请求添加
+          promise = reqAddProduct(opations);
+        }
+
+        const result = await promise;
+        if (result) {
+          message.success('商品添加成功~');
+          this.props.history.push('/product/index')
+        }
+
+      }
+    })
   }
 
   /**
@@ -71,7 +146,9 @@ export default class SaveUpdate extends Component {
     this.props.history.goBack()
   }
   render() {
-    const { options } = this.state;
+    const { options }            = this.state;
+    const { getFieldDecorator  } = this.props.form;
+    const  product               = this.props.location.state;
     //配置表单的基本样式
     const formItemLayout = {
       labelCol: {
@@ -88,29 +165,70 @@ export default class SaveUpdate extends Component {
     }>
       <Form {...formItemLayout} onSubmit={this.addProduct}>
         <Item label="商品名称" required={true}>
-          <Input placeholder="请输入商品名称" allowClear={true}/>
+          {
+            getFieldDecorator(
+              'name',
+              {
+                rules:[{required: true, message: '请输入商品名称'}],
+                initialValue: product ? product.name : ''
+              }
+            )(
+              <Input placeholder="请输入商品名称" allowClear={true}/>
+            )
+          }
+
         </Item>
         <Item label="商品描述">
-          <Input placeholder="请输入商品描述" allowClear={true}/>
+          {
+            getFieldDecorator(
+              'desc',
+              {
+                rules: [{required: true, message: '请输入商品描述'}],
+                initialValue: product ? product.desc : ''
+              }
+            )(
+              <Input placeholder="请输入商品描述" allowClear={true}/>
+            )
+          }
         </Item>
         <Item label="选择分类" wrapperCol={{span: 5}}>
-          <Cascader
-            options={options}
-            loadData={this.loadData}
-            changeOnSelect
-            allowClear={false}
-            placeholder="请选择"
-          />
+          {
+            getFieldDecorator('categoriesId',{
+              rules: [{required: true, message: '请选择商品分类'}],
+              initialValue: this.categoriesId
+            })(
+              <Cascader
+                options={options}
+                loadData={this.loadData}
+                changeOnSelect
+                allowClear={false}
+                placeholder="请选择"
+              />
+            )
+          }
         </Item>
         <Item label="商品价格" >
-          <InputNumber
-            formatter={value => `￥ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-            parser={value => value.replace(/￥\s?|(,*)/g, '')}
-            className="input-price"
-          />
+          {
+            getFieldDecorator(
+              'price',
+              {
+                rules: [{required: true, message: '请输入价格'}],
+                initialValue: product ? product.price : ''
+              }
+            )(
+              <InputNumber
+                formatter={value => `￥ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                parser={value => value.replace(/￥\s?|(,*)/g, '')}
+                className="input-price"
+              />
+            )
+          }
+        </Item>
+        <Item label="商品图片">
+          <PictureUpload imgs={product ? product.imgs : []} id={product ? product._id : ''}/>
         </Item>
         <Item　label="商品详情" wrapperCol={{span: 20}}>
-          <RichTextEditor/>
+          <RichTextEditor ref={this.richTextEditorRef} detail={product ? product.detail : ''}/>
         </Item>
         <Item>
           <Button type="primary" htmlType="submit" className="submit-btn">提交</Button>
@@ -119,3 +237,4 @@ export default class SaveUpdate extends Component {
     </Card>;
   }
 }
+export default Form.create()(SaveUpdate);

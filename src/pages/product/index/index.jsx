@@ -41,7 +41,14 @@ export default class Index extends Component {
    */
   showAddProduct = () => {
     this.props.history.push('/product/saveupdate')
-  }
+  };
+  modifyProduct = ( product ) => {
+    return () => {
+      //跳转到修改产品页面，并传选中的修改对象的信息
+      // console.log(product);//信息存放在跳转后页面组件的props.location.state内
+      this.props.history.push( '/product/saveupdate', product )
+    }
+  };
   render() {
     const { products, total,loading } = this.state;
     //表头内容
@@ -76,7 +83,7 @@ export default class Index extends Component {
         render: (product) => {
           return <div>
             <ConmonButton>商品详情</ConmonButton>
-            <ConmonButton>修改</ConmonButton>
+            <ConmonButton onClick={this.modifyProduct(product)}>修改</ConmonButton>
           </div>
         }
       }
