@@ -34,8 +34,10 @@ class SaveUpdate extends Component {
       }else {
         this.setState({
           options: this.state.options.map(item => {
+            //item是一级品类的每个对象，item.value是options里一级品类自身的_id
+            //parentId是你点击的二级分类的所属的一级分类id
             if (item.value === parentId) {
-              console.log(item,item.value)
+              // console.log(item,item.value)
               item.children = result.map((item) => {
                 return {
                   value: item._id,
@@ -50,7 +52,7 @@ class SaveUpdate extends Component {
     }
   }
   async componentDidMount(){
-   this.fetchCategories('0')
+   this.fetchCategories('0')//一级品类
 
 
     const product = this.props.location.state;
@@ -63,6 +65,7 @@ class SaveUpdate extends Component {
       }
       categoriesId.push(product.categoryId);
     }
+    //挂载到组件上
     this.categoriesId = categoriesId;
   }
   /**
