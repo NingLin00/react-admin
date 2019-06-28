@@ -47,3 +47,7 @@ export const reqAddProduct = ({name, desc, price, categoryId, pCategoryId, detai
 export const reqUpdateProduct = ({name, desc, price, categoryId, pCategoryId, detail, _id}) => ajax('/manage/product/update', {name, desc, price, categoryId, pCategoryId, detail, _id}, 'POST');
 //请求删除商品图片
 export const reqDeleteProductImg = (name, id) => ajax('/manage/img/delete', {name, id}, 'POST');
+//请求更新产品状态（上下架）
+export const reqUpdateProductStatus = (productId, status) => ajax('/manage/product/updateStatus', {productId, status}, 'POST');
+//请求搜索产品
+export const reqSearchProduct = ({searchType, searchContent, pageSize, pageNum}) => ajax('/manage/product/search', {[searchType]: searchContent, pageSize, pageNum});
