@@ -35,6 +35,7 @@ export default class PictureUpload extends Component {
       // 上传失败
       message.error('上传图片失败！', 1);
     } else{
+      //从saveupdate传过来的你选中的那个产品的id（有就是id，没有就是‘ ’）
       const id     = this.props.id;
       const name   = file.name;
       const result = await reqDeleteProductImg(name, id);
@@ -56,11 +57,12 @@ export default class PictureUpload extends Component {
     return (
       <div className="clearfix">
         <Upload
-          //上传到服务器
+          //上传到服务器的对应地址
           action="/manage/img/upload"
           listType="picture-card"
           fileList={fileList}
           onPreview={this.handlePreview}
+          //处理各种变化，如删除，上传
           onChange={this.handleChange}
           // 请求参数
           data={{
